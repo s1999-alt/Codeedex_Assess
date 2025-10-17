@@ -15,7 +15,7 @@ export const registerUser = createAsyncThunk('auth/register', async (data, thunk
 
 export const loginUser = createAsyncThunk('auth/login', async (data, thunkAPI) => {
   const res = await API.post('/auth/login/', data);
-  // res.data contains access and refresh
+
   localStorage.setItem('accessToken', res.data.access);
   return res.data;
 });
