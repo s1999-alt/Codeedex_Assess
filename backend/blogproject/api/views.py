@@ -50,7 +50,15 @@ class PostRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     if instance.author != self.request.user:
       raise PermissionDenied("You can only delete your own posts.")
     instance.delete()
+    
 
+class MyPostsView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Only return posts created by the logged-in user
+        return Post.objects.filter(author=self.request.user).select_related('author')
 
 
 class CommentListCreateView(generics.ListCreateAPIView):
@@ -82,7 +90,7 @@ class LikePostView(APIView):
 
 class UnlikePostView(APIView):
   permission_classes = [IsAuthenticated]
-  
+
   def post(self, request, pk):
     post = get_object_or_404(Post, pk=pk)
     post.likes.remove(request.user)
